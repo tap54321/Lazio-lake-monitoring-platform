@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lake Bolsena Water Monitoring Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('image/9.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            background-color: rgba(30, 30, 30, 0.9);
+            color: #ffffff;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 20px;
+            padding: 20px;
+            background: rgba(35, 35, 35, 0.8);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border-radius: 10px;
+        }
+        h1, h2, h3 {
+            margin: 0;
+            color: #00acc1; /* Accent color */
+        }
+        h1 {
+            font-size: 2.5em;
+        }
+        h2, h3 {
+            margin: 20px 0 20px;
+            font-size: 1.5em;
+        }
+        p {
+            font-size: 1.2em;
+            margin: 10px 0 20px;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #00796b;
+            border-radius: 10px;
+        }
+        #chartContainer {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: nowrap; /* Prevent wrapping to keep them in the same line */
+            gap: 20px; /* Add space between the two charts */
+        }
+        .chart-box {
+            background: rgba(50, 50, 50, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            display: inline-block; /* Change to inline-block to size based on content */
+            margin: 10px; /* Optional: Add margin if needed */
+            text-align: center; /* Center the content */
+        }
+        #pieChartBox {
+            width: 300px; /* Set a fixed width for the pie chart box */
+        }
+        #trendChartBox {
+            width: 600px; /* Set a fixed width for the trend chart box */
+        }
+        canvas {
+            width: 100%; /* Canvas takes the full width of its box */
+            height: auto; /* Maintain aspect ratio */
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .button {
+            background-color: #00796b; /* Primary button color */
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .button:hover {
+            background-color: #004d40; /* Darker shade for hover effect */
+            transform: translateY(-2px);
+        }
+        footer {
+            background-color: rgba(30, 30, 30, 0.9);
+            margin-top: 20px;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9em;
+            color: #f1e8e8ef;
+        }
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #00796b;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #000; /* Change text color to black for contrast */
+            margin: 10px;
+        }
+        #waterQualityYearSelect {
+            background-color: black; /* Make the select button black */
+            color: white; /* Change text color to white for contrast */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Lake Bolsena Water Monitoring Dashboard</h1>
+    </header>
+    <div class="container">
+        <p>Explore the water monitoring indices and historical data for the Bolsena Watershed.</p>
+
+        <!-- Map Visualization -->
+        <iframe src="https://tapashmazumdar08.users.earthengine.app/view/water-monitoring-platform-for-bolsena-watershed" title="Bolsena Watershed Water Monitoring"></iframe>
+
+        <div id="chartContainer">
+            <!-- Chart Container for Pie Chart -->
+            <div id="pieChartBox" class="chart-box">
+                <h2>Water Quality Parameters</h2> <!-- Moved inside the pie chart box -->
+                <canvas id="myPieChart"></canvas>
+                <p>Select a year to view water quality metrics.</p>
+                <select id="waterQualityYearSelect">
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                </select>
+                <button class="button" id="updateWaterQualityButton">Update Water Quality</button>
+            </div>
+
+            <div id="trendChartBox" class="chart-box">
+                <h3>Historical Trends</h3>
+                <!-- Chart Container for Yearly Comparison and Trend Graphs -->
+                <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+                    <canvas id="myTrendChart"></canvas>
+                    <canvas id="myBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <a href="https://tapashmazumdar08.users.earthengine.app/view/water-monitoring-platform-for-bolsena-watershed" target="_blank" class="button">Future scenario simulation</a>
+            <a href="maps.html" target="_blank" class="button">Vulnurability Assesment</a>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 UNICUSANO & CMCC. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        const historicalData = {
+            lakeLevel: [30, 32, 31, 34],
+            temperature: [16, 18, 17, 19],
+            precipitation: [800, 750, 700, 900],
+        };
+        const waterQualityData = {
+            '2020': { pH: 7.2, turbidity: 10, dissolvedOxygen: 6 },
+            '2021': { pH: 6.8, turbidity: 8, dissolvedOxygen: 7 },
+            '2022': { pH: 7.0, turbidity: 9, dissolvedOxygen: 5 },
+            '2023': { pH: 7.5, turbidity: 12, dissolvedOxygen: 8 },
+        };
+
+        const labels = ['2020', '2021', '2022', '2023']; // Yearly labels
+
+        // Initial chart setup for pie chart
+        const pieCtx = document.getElementById('myPieChart').getContext('2d');
+        let myPieChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['pH', 'Turbidity', 'Dissolved Oxygen'],
+                datasets: [{
+                    label: 'Water Quality Parameters',
+                    data: [
+                        waterQualityData['2020'].pH,
+                        waterQualityData['2020'].turbidity,
+                        waterQualityData['2020'].dissolvedOxygen
+                    ],
+                    backgroundColor: ['#00796b', '#ff9800', '#3f51b5'],
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 14, // Font size for legend
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Initial chart setup for trend chart
+        const trendCtx = document.getElementById('myTrendChart').getContext('2d');
+        let myTrendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Lake Level (m)',
+                    data: historicalData.lakeLevel,
+                    borderColor: '#00796b',
+                    backgroundColor: 'rgba(0, 121, 107, 0.2)',
+                    fill: true,
+                },
+                {
+                    label: 'Temperature (°C)',
+                    data: historicalData.temperature,
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255, 152, 0, 0.2)',
+                    fill: true,
+                },
+                {
+                    label: 'Precipitation (mm)',
+                    data: historicalData.precipitation,
+                    borderColor: '#3f51b5',
+                    backgroundColor: 'rgba(63, 81, 181, 0.2)',
+                    fill: true,
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 14, // Font size for legend
+                            }
+                        }
+                    },
+                }
+            }
+        });
+
+        // Initial chart setup for bar chart
+        const barCtx = document.getElementById('myBarChart').getContext('2d');
+        let myBarChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Lake Level (m)',
+                    data: historicalData.lakeLevel,
+                    backgroundColor: '#00796b',
+                },
+                {
+                    label: 'Temperature (°C)',
+                    data: historicalData.temperature,
+                    backgroundColor: '#ff9800',
+                },
+                {
+                    label: 'Precipitation (mm)',
+                    data: historicalData.precipitation,
+                    backgroundColor: '#3f51b5',
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 14, // Font size for legend
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Update pie chart on year selection
+        document.getElementById('updateWaterQualityButton').addEventListener('click', function () {
+            const selectedYear = document.getElementById('waterQualityYearSelect').value;
+            myPieChart.data.datasets[0].data = [
+                waterQualityData[selectedYear].pH,
+                waterQualityData[selectedYear].turbidity,
+                waterQualityData[selectedYear].dissolvedOxygen
+            ];
+            myPieChart.update();
+        });
+    </script>
+</body>
+</html>
