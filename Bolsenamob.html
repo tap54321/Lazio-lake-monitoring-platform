@@ -33,6 +33,7 @@
             background: rgba(35, 35, 35, 0.8);
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             border-radius: 10px;
+            width: 90%; /* Use a percentage width for better responsiveness */
         }
         h1, h2, h3 {
             margin: 0;
@@ -42,7 +43,7 @@
             font-size: 2.5em;
         }
         h2, h3 {
-            margin: 20px 0 20px;
+            margin: 20px 0;
             font-size: 1.5em;
         }
         p {
@@ -51,38 +52,33 @@
         }
         iframe {
             width: 100%;
-            height: 600px;
+            height: 300px; /* Reduced height for better responsiveness */
             border: 2px solid #00796b;
             border-radius: 10px;
         }
         #chartContainer {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: nowrap; /* Prevent wrapping to keep them in the same line */
-            gap: 20px; /* Add space between the two charts */
+            flex-direction: column; /* Stack charts vertically on smaller screens */
+            gap: 20px; /* Add space between the charts */
+            margin-top: 20px;
         }
         .chart-box {
             background: rgba(50, 50, 50, 0.9);
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            display: inline-block; /* Change to inline-block to size based on content */
-            margin: 10px; /* Optional: Add margin if needed */
             text-align: center; /* Center the content */
-        }
-        #pieChartBox {
-            width: 300px; /* Set a fixed width for the pie chart box */
-        }
-        #trendChartBox {
-            width: 600px; /* Set a fixed width for the trend chart box */
+            width: 100%; /* Full width for responsiveness */
         }
         canvas {
-            width: 100%; /* Canvas takes the full width of its box */
-            height: auto; /* Maintain aspect ratio */
+            width: 90% !important; /* Make the pie chart 80% of its container */
+            height: auto !important; /* Maintain aspect ratio */
+            max-height: 350px; /* Limit max height */
         }
         .button-container {
             display: flex;
-            justify-content: center;
+            flex-direction: column; /* Stack buttons vertically on smaller screens */
+            align-items: center;
             margin: 20px 0;
         }
         .button {
@@ -95,6 +91,8 @@
             font-size: 1.2em;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
+            width: 100%; /* Make buttons full width for easier clicking */
+            max-width: 300px; /* Limit max width */
         }
         .button:hover {
             background-color: #004d40; /* Darker shade for hover effect */
@@ -109,16 +107,26 @@
             color: #f1e8e8ef;
         }
         select {
-            padding: 10px;
+            padding: 15px; /* Increased padding for touch accessibility */
             border-radius: 5px;
             border: 1px solid #00796b;
             background-color: rgba(255, 255, 255, 0.8);
             color: #000; /* Change text color to black for contrast */
             margin: 10px;
+            width: 100%; /* Full width for better interaction */
+            max-width: 300px; /* Limit max width */
         }
-        #waterQualityYearSelect {
-            background-color: black; /* Make the select button black */
-            color: white; /* Change text color to white for contrast */
+        /* Responsive Styles */
+        @media (min-width: 768px) {
+            #chartContainer {
+                flex-direction: row; /* Side by side for larger screens */
+            }
+            #pieChartBox, #trendChartBox {
+                width: calc(50% - 20px); /* Adjust width for larger screens */
+            }
+            iframe {
+                height: 600px; /* Height for larger screens */
+            }
         }
     </style>
 </head>
@@ -135,7 +143,7 @@
         <div id="chartContainer">
             <!-- Chart Container for Pie Chart -->
             <div id="pieChartBox" class="chart-box">
-                <h2>Water Quality Parameters</h2> <!-- Moved inside the pie chart box -->
+                <h2>Water Quality Parameters</h2>
                 <canvas id="myPieChart"></canvas>
                 <p>Select a year to view water quality metrics.</p>
                 <select id="waterQualityYearSelect">
@@ -150,16 +158,14 @@
             <div id="trendChartBox" class="chart-box">
                 <h3>Historical Trends</h3>
                 <!-- Chart Container for Yearly Comparison and Trend Graphs -->
-                <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
-                    <canvas id="myTrendChart"></canvas>
-                    <canvas id="myBarChart"></canvas>
-                </div>
+                <canvas id="myTrendChart"></canvas>
+                <canvas id="myBarChart"></canvas>
             </div>
         </div>
 
         <div class="button-container">
-            <a href="https://tapashmazumdar08.users.earthengine.app/view/water-monitoring-platform-for-bolsena-watershed" target="_blank" class="button">Future scenario simulation</a>
-            <a href="maps.html" target="_blank" class="button">Vulnurability Assesment</a>
+            <a href="https://tapashmazumdar08.users.earthengine.app/view/water-monitoring-platform-for-bolsena-watershed" target="_blank" class="button">Future Scenario Simulation</a>
+            <a href="maps.html" target="_blank" class="button">Vulnerability Assessment</a>
         </div>
     </div>
     <footer>
@@ -199,6 +205,7 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // Allow custom aspect ratio
                 plugins: {
                     legend: {
                         labels: {
