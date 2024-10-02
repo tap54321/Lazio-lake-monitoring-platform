@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Maps</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0; /* Light background */
+        }
+        h1 {
+            text-align: center;
+        }
+        .map-container {
+            display: flex;
+            flex-wrap: wrap; /* Allows the maps to wrap */
+            justify-content: center; /* Center the maps */
+            margin: 20px 0;
+        }
+        .map {
+            margin: 10px;
+            border: 2px solid #ccc; /* Border around each map */
+            border-radius: 5px;
+            overflow: hidden; /* Ensures border-radius is respected */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow effect */
+        }
+        .map img {
+            max-width: 200px; /* Limit image size */
+            height: auto; /* Maintain aspect ratio */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>All Maps</h1>
+    <div class="map-container">
+        <div class="map" onclick="openMap('image/map1.png')">
+            <img src="map1.jpg" alt="Map 1"> <!-- Replace with your actual map file name -->
+            <p>Map 1</p>
+        </div>
+        <div class="map" onclick="openMap('map2.jpg')">
+            <img src="map2.jpg" alt="Map 2"> <!-- Replace with your actual map file name -->
+            <p>Map 2</p>
+        </div>
+        <div class="map" onclick="openMap('map3.jpg')">
+            <img src="map3.jpg" alt="Map 3"> <!-- Replace with your actual map file name -->
+            <p>Map 3</p>
+        </div>
+        <!-- Add more maps as needed -->
+    </div>
+
+    <script>
+        function openMap(mapUrl) {
+            window.open(mapUrl, '_blank'); // Open the clicked map in a new tab
+        }
+    </script>
+
+</body>
+</html>
